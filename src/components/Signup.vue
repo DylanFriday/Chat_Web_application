@@ -25,6 +25,7 @@ export default {
             if(!res){
                 throw new Error("Can't create new account due to specfic reasons")
             }
+            res.user.updateProfile({displayName:displayName.value})
         }catch(err){
           error.value = err.message;
           console.log(error.value)
