@@ -1,8 +1,8 @@
 <template>
-  <nav>
+  <nav v-if="user">
     <div>
-        <p>Hi display name</p>
-        <p class="email">Logged in as email</p>
+        <p>Hi {{user.displayName}}</p>
+        <p class="email">Logged in as {{user.email}}</p>
     </div>
         <button @click="logout">Logout</button>
 
@@ -10,21 +10,20 @@
 </template>
 
 <script>
-import { auth } from '@/firebase/config'
-import { ref } from '@vue/reactivity'
+import navlogout from '../composables/navbarLogout'
+import getUser from '../composables/getUser'
 export default {
     setup(){
-        let error = ref(null)
+       let{error,Navlogout}= navlogout();
+       let {user} = getUser();
         let logout=async()=>{
-            try{
-                await auth.signOut();
-                console.log("user loggout");
-            }catch(err){
-                error.value = err.message
-                console.log(err.value)
-            }
+            let res = await Navlogout();
+          if(res){
+        //   context.emit('enterChatroom')
+        console.log('hi')
+          }
         }
-        return {logout}
+        return {logout,error,user}
     }
 }
 </script>
