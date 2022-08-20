@@ -1,0 +1,72 @@
+<template>
+  <div class="chat-window">
+    <div class="messages" v-for="message in messages" :key="message.id">
+        <div class="single">
+            <span class="created-at">{{message.created_at.toDate()}}</span>
+            <span class="name">{{message.name}}</span>
+            <span class="message">{{message.message}}</span>
+        </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref } from '@vue/reactivity'
+
+import { db } from '../firebase/config'
+export default {
+    setup(){
+    //     db.collection('messages').orderBy('created_at').onSnapshot((snap)=>{
+    //         let results = [];
+    //         snap.docs.forEach((doc)=>{
+    //             let document = {...doc.data(),id:doc.id}
+    //             results.push(document)
+    //         })
+    //         console.log(results)
+    //     })
+    // }
+      let messages = ref([])
+      db.collection("message").orderBy("created_at").onSnapshot((snap)=>{
+        let results=[];//this onsnapshot run again and array empty again
+        snap.docs.forEach((doc)=>{
+          let document={...doc.data(),id:doc.id}
+
+          // normal_code
+
+          // if(doc.data().created_at){
+          // results.push(document);
+          // }
+
+          // trick using and_gate
+          doc.data().created_at && results.push(document);
+        })
+          messages.value = results;
+      })
+      return {messages}
+    }
+}
+</script>
+
+<style>
+.chat-window{
+    background: #fafafa;
+    padding: 30px 20px;
+}
+.single{
+    margin: 18px 0;
+}
+.created-at{
+    display: block;
+    color: #999;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+.name{
+    font-weight: bold;
+    margin-right: 6px;
+}
+.messages{
+    max-height: 400px;
+    overflow: auto;
+}
+</style>
